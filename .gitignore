@@ -5,3 +5,8 @@ key/*
 msgraph/*
 *.pyc
 .idea/*
+
+example.py
+app/modogetdirectory.py
+app/readfile.py
+app/unzipfile.py
