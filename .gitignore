@@ -1,0 +1,7 @@
+venv/*
+data/*
+secrets/*
+key/*
+msgraph/*
+*.pyc
+.idea/*
