@@ -1,10 +1,12 @@
 __author__ = 'jwpully'
 import requests
+import json
 
-def exportfiledownload(dataCenter, survey_id, file_id, bearerToken):
-    # Export file download
+def generateexport(dataCenter, survey_id, bearerToken, startDate=None, endDate=None):
+    # Attempt to export responses
+
     try:
-        baseUrl = "https://{0}.qualtrics.com/API/v3/surveys/{1}/export-responses/{2}/file".format(dataCenter, survey_id, file_id)
+        baseUrl = "https://{0}.qualtrics.com/API/v3/surveys/{1}/export-responses".format(dataCenter, survey_id)
         print(baseUrl)
 
         headers = {
@@ -12,23 +14,28 @@ def exportfiledownload(dataCenter, survey_id, file_id, bearerToken):
              "Content-Type": "application/json"
             }
 
-        response = requests.request("GET", baseUrl, headers=headers)
+        json_string = {"format": "json"}
 
-        with open('data/responses.zip', 'wb') as f:
-            for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
+        if startDate is not None:
+            json_string['startDate'] = startDate
 
-        print(response.status_code)
+        if endDate is not None:
+            json_string['endDate'] = endDate
+
+        response = requests.request("POST", baseUrl, json=json_string, headers=headers)
+        print(response.text)
+        return json.loads(response.text)['result']['progressId']
+
     except Exception as e:
-        print("An error occurred while downloading your export file")
+        print("An error occurred while generating the Qualtrics survey export")
         print(str(e))
         exit(1)
+
 
 if __name__ == "__main__":
     import argparse
     import os
-    from secretsmanager import secretsmanager
+    from app.secretsmanager import secretsmanager
 
     secrets_path = os.getenv("CV_SECRETS_PATH", None)
     if secrets_path is not None:
@@ -46,11 +53,6 @@ if __name__ == "__main__":
     else:
         QUALTRICS_SURVEYID = os.getenv("QUALTRICS_SURVEYID", None)
 
-    if 'QUALTRICS_FILEID' in secrets:
-        QUALTRICS_FILEID = secrets['QUALTRICS_FILEID']
-    else:
-        QUALTRICS_FILEID = os.getenv("QUALTRICS_FILEID", None)
-
     if 'QUALTRICS_BEARERTOKEN' in secrets:
         QUALTRICS_BEARERTOKEN = secrets['QUALTRICS_BEARERTOKEN']
     else:
@@ -59,7 +61,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--dataCenter", help="Qualtrics Data Center", default=QUALTRICS_DATACENTER)
     parser.add_argument("-s", "--survey_id", help="The Survey id from getsurveyid", default=QUALTRICS_SURVEYID)
-    parser.add_argument("-p", "--file_id", help="The progress id from exportprogress", default=QUALTRICS_FILEID)
     parser.add_argument("-t", "--bearerToken", help="Token generated from gettoken", default=QUALTRICS_BEARERTOKEN)
+    parser.add_argument("-b", "--startDate", help="Start Date of recorded range", default=None)
+    parser.add_argument("-e", "--endDate", help="End date of recorded range", default=None)
     args = parser.parse_args()
-    exportfiledownload(args.dataCenter, args.survey_id, args.file_id, args.bearerToken)
+    print(generateexport(args.dataCenter, args.survey_id, args.bearerToken, args.startDate, args.endDate))

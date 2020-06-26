@@ -19,7 +19,7 @@ def gettoken(clientId, clientSecret, dataCenter):
 if __name__ == "__main__":
     import argparse
     import os
-    from secretsmanager import secretsmanager
+    from app.secretsmanager import secretsmanager
 
     secrets_path = os.getenv("CV_SECRETS_PATH", None)
     if secrets_path is not None:

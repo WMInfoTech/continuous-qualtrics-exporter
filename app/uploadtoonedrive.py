@@ -1,4 +1,3 @@
-import os
 from msgraph import api, user, files
 
 
@@ -38,7 +37,7 @@ def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, res
 if __name__ == "__main__":
     import argparse
     import os
-    from secretsmanager import secretsmanager
+    from app.secretsmanager import secretsmanager
 
     secrets_path = os.getenv("CV_SECRETS_PATH", None)
     if secrets_path is not None:
