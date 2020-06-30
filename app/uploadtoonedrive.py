@@ -1,9 +1,10 @@
 from msgraph import api, user, files
-
+import os
 
 def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, resource_uri, client_id, client_thumbprint
                      , client_cert, od_user, od_folder):
     try:
+        upload_folder=None
         client_certificate_path = client_cert
         with open(client_certificate_path, 'rb') as input_file:
             client_certificate = input_file.read()
@@ -15,11 +16,11 @@ def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, res
         drive = files.Drive.get(api_instance, user=test_user)
 
         accessible_drives = files.Drive.accessible(api_instance, user=od_user)
-        print(accessible_drives)
+        # print(accessible_drives)
 
         # fetch the root folder of the drive
         drive_root_folder = files.DriveItem.root_folder(api_instance, drive=drive)
-        print(drive_root_folder)
+        # print(drive_root_folder)
         # fetch children of the root directory of a drive
         root_children = files.DriveItem.get_children(api_instance, drive=drive)
         # fetch children of parent folder
@@ -27,75 +28,33 @@ def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, res
             if child.name == od_folder:
                 upload_folder = child
 
-        with open(os.path.join(uploadfilepath, uploadfile), 'rb') as input_file:
-            new_file = files.DriveItem.upload(api_instance, input_file.read(), drive=drive, parent=upload_folder, file_name=uploadfile)
+        if upload_folder is None:
+            print("Could not find the intended upload folder")
+            exit(1)
+        else:
+            try:
+                with open(os.path.join(uploadfilepath, uploadfile), 'rb') as input_file:
+                    new_file = files.DriveItem.upload(api_instance, input_file.read(), drive=drive, parent=upload_folder, file_name=uploadfile)
+                return "Success"
+            except Exception as e:
+                print(str(e))
+                return "Failed"
+            # print(new_file)
     except Exception as e:
         print("There was an error uploading to OneDrive")
         print(str(e))
         exit(1)
 
 if __name__ == "__main__":
-    import argparse
-    import os
-    from app.secretsmanager import secretsmanager
+    from app.configmanager import settings
 
-    secrets_path = os.getenv("CV_SECRETS_PATH", None)
-    if secrets_path is not None:
-        secrets = secretsmanager(secrets_path)
-    else:
-        secrets = {}
+    try:
+        settings = settings()
 
-    if 'MICROSOFT_AUTHORITY' in secrets:
-        MICROSOFT_AUTHORITY = secrets['MICROSOFT_AUTHORITY']
-    else:
-        MICROSOFT_AUTHORITY = os.getenv("MICROSOFT_AUTHORITY", None)
-
-    if 'MICROSOFT_TENANT' in secrets:
-        MICROSOFT_TENANT = secrets['MICROSOFT_TENANT']
-    else:
-        MICROSOFT_TENANT = os.getenv("MICROSOFT_TENANT", None)
-
-    if 'MICROSOFT_RESOURCE' in secrets:
-        MICROSOFT_RESOURCE = secrets['MICROSOFT_RESOURCE']
-    else:
-        MICROSOFT_RESOURCE = os.getenv("MICROSOFT_RESOURCE", None)
-
-    if 'MICROSOFT_CLIENTID' in secrets:
-        MICROSOFT_CLIENTID = secrets['MICROSOFT_CLIENTID']
-    else:
-        MICROSOFT_CLIENTID = os.getenv("MICROSOFT_CLIENTID", None)
-
-    if 'MICROSOFT_THUMBPRINT' in secrets:
-        MICROSOFT_THUMBPRINT = secrets['MICROSOFT_THUMBPRINT']
-    else:
-        MICROSOFT_THUMBPRINT = os.getenv("MICROSOFT_THUMBPRINT", None)
-
-    if 'MICROSOFT_CERT' in secrets:
-        MICROSOFT_CERT = secrets['MICROSOFT_CERT']
-    else:
-        MICROSOFT_CERT = os.getenv("MICROSOFT_CERT", None)
-
-    if 'MICROSOFT_USER' in secrets:
-        MICROSOFT_USER = secrets['MICROSOFT_USER']
-    else:
-        MICROSOFT_USER = os.getenv("MICROSOFT_USER", None)
-
-    if 'MICROSOFT_USERFOLDER' in secrets:
-        MICROSOFT_USERFOLDER = secrets['MICROSOFT_USERFOLDER']
-    else:
-        MICROSOFT_USERFOLDER = os.getenv("MICROSOFT_USERFOLDER", None)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--uploadPath", help="Upload file path")
-    parser.add_argument("-f", "--uploadFile", help="Upload file name")
-    parser.add_argument("-a", "--authority", help="Authority host URI", default=MICROSOFT_AUTHORITY)
-    parser.add_argument("-t", "--tenant", help="Tenant", default=MICROSOFT_TENANT)
-    parser.add_argument("-r", "--resource", help="Resource URI", default=MICROSOFT_RESOURCE)
-    parser.add_argument("-c", "--cliendID", help="Resource URI", default=MICROSOFT_CLIENTID)
-    parser.add_argument("-g", "--thumbPrint", help="Thumb Print", default=MICROSOFT_THUMBPRINT)
-    parser.add_argument("-b", "--clientCert", help="Client certificate path and certificate filename", default=MICROSOFT_CERT)
-    parser.add_argument("-u", "--msUser", help="Client certificate path and certificate filename", default=MICROSOFT_USER)
-    parser.add_argument("-d", "--msUserFolder", help="Client certificate path and certificate filename", default=MICROSOFT_USERFOLDER)
-    args = parser.parse_args()
-    uploadtoonedrive(args.uploadPath, args.uploadFile, args.authority, args.tenant, args.resource, args.cliendID
-                     , args.thumbPrint, args.clientCert, args.msUser, args.msUserFolder)
+        uploadtoonedrive(settings['QUALTRICS_UPLOADPATH'], settings['QUALTRICS_UPLOADFILE'], settings['MS_AUTHORITY']
+                         , settings['MS_TENANT'], settings['MS_RESOURCE'], settings['MS_CLIENTID']
+                         , settings['MS_THUMBPRINT'], settings['MS_CLIENTCERT'], settings['MS_USER'],
+                         settings['MS_USERFOLDER'])
+    except Exception as e:
+        print("There was an error while uploading to OneDrive")
+        print(str(e))
