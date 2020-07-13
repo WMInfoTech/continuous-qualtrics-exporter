@@ -12,7 +12,19 @@ from lib.uploadtoonedrive import uploadtoonedrive
 settings = settings()
 
 def receiveSignal(signalNumber, frame):
-    print("Received: ", signalNumber)
+    print("Received terminate signal: ", signalNumber)
+    open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files', 'end.file'), 'a').close()
+
+def manage_delay(loop_delay):
+    if (loop_delay % 5 != 0):
+        print("LOOP_DELAY must be divisible by 5")
+        exit(1)
+    count = loop_delay / 5
+    for i in range(int(count)):
+        time.sleep(5)
+        print(i)
+        if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files', 'end.file')):
+            exit(0)
 
 
 if __name__ == '__main__':
@@ -56,4 +68,5 @@ if __name__ == '__main__':
         print("Uploaded Qualtrics File to OneDrive")
 
         print("Sleeping for {0} seconds".format(str(settings['LOOP_DELAY'])))
-        time.sleep(int(settings['LOOP_DELAY']))
+        manage_delay(int(settings['LOOP_DELAY']))
+        # time.sleep(int(settings['LOOP_DELAY']))
