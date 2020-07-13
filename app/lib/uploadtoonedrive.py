@@ -34,7 +34,7 @@ def uploadtoonedrive(authority_host_uri, tenant, resource_uri, client_id, client
             exit(1)
         else:
             try:
-                if unique_filename is True:
+                if unique_filename == "True":
                     uploadfile_name = "{0}_{1}.{2}".format(uploadfile, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"), 'zip')
                 else:
                     uploadfile_name = "{0}.{1}".format(uploadfile, 'zip')
