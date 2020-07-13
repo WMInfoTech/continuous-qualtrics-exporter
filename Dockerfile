@@ -2,8 +2,6 @@ FROM python:3.8.3
 
 ENV PYTHONUNBUFFERED=1
 
-COPY msgraph /pippackages/msgraph
-
 COPY app /app
 
 WORKDIR /app
