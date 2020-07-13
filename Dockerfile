@@ -7,7 +7,6 @@ COPY app /app
 WORKDIR /app
 
 RUN pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir git+https://github.com/WMInfoTech/python-msgraph.git
+    && pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "/app/main.py"]
