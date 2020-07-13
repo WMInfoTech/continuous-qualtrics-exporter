@@ -1,8 +1,9 @@
-from msgraph import api, user, files
+from msgraph import files, api, user
 import os
+import datetime
 
-def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, resource_uri, client_id, client_thumbprint
-                     , client_cert, od_user, od_folder):
+def uploadtoonedrive(authority_host_uri, tenant, resource_uri, client_id, client_thumbprint
+                     , client_cert, od_user, od_folder, unique_filename, fileobject=None, uploadfile=None, uploadfilepath=None):
     try:
         upload_folder=None
         client_certificate_path = client_cert
@@ -33,9 +34,19 @@ def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, res
             exit(1)
         else:
             try:
-                with open(os.path.join(uploadfilepath, uploadfile), 'rb') as input_file:
-                    new_file = files.DriveItem.upload(api_instance, input_file.read(), drive=drive, parent=upload_folder, file_name=uploadfile)
-                return "Success"
+                if unique_filename is True:
+                    uploadfile_name = "{0}_{1}.{2}".format(uploadfile, datetime.datetime.now().strftime("%Y%m%d_%H%M%S"), 'zip')
+                else:
+                    uploadfile_name = "{0}.{1}".format(uploadfile, 'zip')
+
+                if fileobject is None:
+                    with open(os.path.join(uploadfilepath, uploadfile), 'rb') as input_file:
+                        new_file = files.DriveItem.upload(api_instance, input_file.read(), drive=drive, parent=upload_folder, file_name=uploadfile_name)
+                    return "Success"
+                else:
+                    new_file = files.DriveItem.upload(api_instance, fileobject.read(), drive=drive,
+                                                      parent=upload_folder, file_name=uploadfile_name)
+                    return "Success"
             except Exception as e:
                 print(str(e))
                 return "Failed"
@@ -46,15 +57,15 @@ def uploadtoonedrive(uploadfilepath, uploadfile, authority_host_uri, tenant, res
         exit(1)
 
 if __name__ == "__main__":
-    from app.configmanager import settings
+    from configmanager import settings
 
     try:
         settings = settings()
 
-        uploadtoonedrive(settings['QUALTRICS_UPLOADPATH'], settings['QUALTRICS_UPLOADFILE'], settings['MS_AUTHORITY']
+        uploadtoonedrive(settings['MS_AUTHORITY']
                          , settings['MS_TENANT'], settings['MS_RESOURCE'], settings['MS_CLIENTID']
                          , settings['MS_THUMBPRINT'], settings['MS_CLIENTCERT'], settings['MS_USER'],
-                         settings['MS_USERFOLDER'])
+                         settings['MS_USERFOLDER'], settings['MS_UNIQEFILENAME'], None, settings['QUALTRICS_UPLOADFILE'], settings['QUALTRICS_UPLOADPATH'])
     except Exception as e:
         print("There was an error while uploading to OneDrive")
         print(str(e))

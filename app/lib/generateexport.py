@@ -2,7 +2,7 @@ __author__ = 'jwpully'
 import requests
 import json
 
-def generateexport(dataCenter, survey_id, bearerToken, startDate=None, endDate=None):
+def generateexport(dataCenter, survey_id, bearerToken, format, startDate=None, endDate=None):
     # Attempt to export responses
 
     try:
@@ -14,7 +14,7 @@ def generateexport(dataCenter, survey_id, bearerToken, startDate=None, endDate=N
              "Content-Type": "application/json"
             }
 
-        json_string = {"format": "json"}
+        json_string = {"format": format}
 
         if startDate is not None:
             json_string['startDate'] = startDate
@@ -34,7 +34,7 @@ def generateexport(dataCenter, survey_id, bearerToken, startDate=None, endDate=N
 
 if __name__ == "__main__":
     import argparse
-    from app.configmanager import settings
+    from configmanager import settings
 
     try:
         settings = settings()
@@ -43,7 +43,7 @@ if __name__ == "__main__":
         parser.add_argument("-t", "--bearerToken", help="Token generated from gettoken", default=None)
         args = parser.parse_args()
         if args.bearerToken is not None:
-            progressId = generateexport(settings['QUALTRICS_DATACENTER'], settings['QUALTRICS_SURVEYID'], args.bearerToken, "2020-06-11T00:00:00Z", "2020-06-11T23:59:59Z")
+            progressId = generateexport(settings['QUALTRICS_DATACENTER'], settings['QUALTRICS_SURVEYID'], args.bearerToken, settings['QUALTRICS_EXPORTFORMAT'], "2020-06-11T00:00:00Z", "2020-06-11T23:59:59Z")
             print("Next command, execute:")
             print("python exportprogress.py --bearerToken " + args.bearerToken + " --progressId " + progressId)
         else:

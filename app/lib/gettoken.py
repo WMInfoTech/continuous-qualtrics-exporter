@@ -17,7 +17,7 @@ def gettoken(clientId, clientSecret, dataCenter):
 
 
 if __name__ == "__main__":
-    from app.configmanager import settings
+    from configmanager import settings
 
     try:
         settings = settings()

@@ -35,7 +35,7 @@ def exportprogress(dataCenter, survey_id, progress_id, bearerToken):
 
 if __name__ == "__main__":
     import argparse
-    from app.configmanager import settings
+    from configmanager import settings
 
     try:
         settings = settings()

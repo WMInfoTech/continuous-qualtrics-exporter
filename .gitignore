@@ -2,14 +2,14 @@ venv/*
 data/*
 secrets/*
 key/*
-msgraph/*
+app/msgraph/*
 *.pyc
 .idea/*
 
 example.py
-app/modogetdirectory.py
-app/readfile.py
-app/unzipfile.py
+app/lib/modogetdirectory.py
+app/lib/readfile.py
+app/lib/unzipfile.py
 db/*
 !db/.dir
 config/*
