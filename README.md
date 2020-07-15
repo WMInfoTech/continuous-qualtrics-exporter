@@ -1,5 +1,5 @@
-Symptom Tracker Data Processing Code  
-====================================
+Continuous Qualtrics Exporter
+=============================
 
 This package contains scripts that will allow you to automate the export
 of Qualtrics survey data and deliver it to OneDrive.
