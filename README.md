@@ -31,7 +31,7 @@ A requirements.txt file is included that lists all required pip packages. All of
 this can be installed either globally, using python virtual environments, or run
 in a container.
 
-Additionally, a Docker image is available on the [Docker Hub](https://hub.docker.com/repository/docker/wmit/continuous-qualtrics-exporter).
+Additionally, a Docker image is available on the [Docker Hub](https://hub.docker.com/r/wmit/continuous-qualtrics-exporter).
 The required settings detailed below can be provided using any of the popular container
 orchestration platforms. 
 
