@@ -2,19 +2,24 @@ Symptom Tracker Data Processing Code
 ====================================
 
 This package contains scripts that will allow you to automate the export
-of Qualtrics survey data and deliver it to OneDrive. All the scripts
-contained in this project are simple, and can standalone if needed. This
-gives you the ability to fork this and modify it in a way that is useful
+of Qualtrics survey data and deliver it to OneDrive.
+
+All the scripts contained in this project are simple, and can run standalone
+if needed. This gives you the ability to fork and modify it in a way that is useful
 to you. The overall project is a representation of how it can be used.
+
 We understand that every use case may differ. This should get you past the
 basics and move you right to the step where you process your survey results
-and take action. You could easily replace the OneDrive upload code with
-something you develop to send the data to a reporting tool, another data
-storage service, or read and act on the data in realtime.
+and take action.
+
+You can easily replace the OneDrive upload code with something else
+to send the data to a reporting tool, another data storage service,
+or read and act on the data in realtime. If you think your modification
+might be useful to others, please consider opening a pull request.
 
 At the bottom of this README you will find references to some sample code
-that shows how to interact with the ModoLabs Communicate API's that can be
-used to develop push notifications to your mobile app users based on data
+that shows how to interact with the ModoLabs Communicate APIss that can be
+used to send push notifications to your mobile app users based on data
 pulled from your survey results.
 
 
@@ -41,7 +46,7 @@ three ways.
    differently. 
 2. Set up a secrets directory and store values in files in that directory.
     * Set the environment variable `CV_SECRETS_PATH` equal to the directory name.
-    * Create a file for each value where the file name should be the required setting.For example, your file name would be `QUALTRICS_CLIENTID` and the file would contain a single entry with the value of the clientid. This approach will also work for any or all required settings. 
+    * Create a file for each value where the file name should be the required setting. For example, your file name would be `QUALTRICS_CLIENTID` and the file would contain a single entry with the value of the clientid. This approach will also work for any or all required settings. 
     * Build a config.yml file that contains any or all settings. You will need the environment variable `CV_CONFIG_PATH` set equal to the directory where you will store this file. 
     * The file format should be 
 ```yaml
@@ -153,15 +158,17 @@ three ways.
     * Direct usage example (will only work directly if file is written locally)
         * `uploadtoonedrive.py`
 
+## Contributions
+
+We welcome contributions to this project. Feel free to open an issue or pull request.
 
 ## Modo Labs API Information
 
-Also included in this code base are two scripts that can be used to manage notifications
+Also included in this code are two scripts that can be used to manage push notifications
 through the ModoLabs mobile platform. This functionality requires the Communicate Premium
-feature that delivers functionality to support personal push notifications. I recommend
-reading Modo support documentation on how to generate the two required tokens needed to use
-these API's, setting up the directory and the personal channel and documentation on the
-appropriate file scructure of the notification directory. 
+feature. I recommend reading Modo support documentation on how to generate the two required
+tokens needed to use these APIs, setting up the directory and the personal channel and
+documentation on the appropriate file scructure of the notification directory. 
 
 * modonewdirectory.py
     * Takes a local directory xml file and will upload it to Modo and enable it as the current directory. 
