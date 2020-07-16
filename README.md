@@ -157,6 +157,8 @@ three ways.
     * Returns a Success or Failed message
     * Direct usage example (will only work directly if file is written locally)
         * `uploadtoonedrive.py`
+- main.py
+    * This process will run continuously and will import and execute all the scripts defined above.  It requires all the same setup already described, but will pass the result of each script to the next process. 
 
 ## Contributions
 
